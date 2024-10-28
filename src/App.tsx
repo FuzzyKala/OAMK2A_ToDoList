@@ -1,26 +1,64 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
+import axios from "axios";
+import TaskList from "./components/TaskList";
+import { Task } from "./PropInterface";
+
+const url = "http://localhost:3001";
 
 function App() {
-  const [task, setTask] = useState<string>("");
-  const [tasks, setTasks] = useState<string[]>([]);
+  const [task, setTask] = useState<Task>({
+    id: 0,
+    description: "",
+  });
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    axios
+      .get(url)
+      .then((res) => setTasks(res.data))
+      .catch((err) => alert(err.res.data.err ? err.res.data.err : err));
+  }, []);
+
   const addTask = () => {
-    setTasks([...tasks, task]);
-    setTask("");
+    if (!task.description.trim()) return;
+    axios
+      .post(`${url}/create`, {
+        description: task.description,
+      })
+      .then((res) => {
+        const newTask = { id: res.data.id, description: task.description };
+        setTasks([...tasks, newTask]);
+        setTask({ id: 0, description: "" });
+      })
+      .catch((err) => alert(err.res?.data?.err || err.message));
   };
-  const deleteTask = (deletedTask: string) => {
-    const withoutRemoved = tasks.filter((task) => task !== deletedTask);
-    setTasks(withoutRemoved);
+
+  const deleteTask = (deletedTaskId: number) => {
+    axios
+      .delete(`${url}/delete/${deletedTaskId}`)
+      .then((res) => {
+        if (res.status === 200) {
+          const withoutRemoved = tasks.filter(
+            (task) => task.id !== deletedTaskId
+          );
+          setTasks(withoutRemoved);
+        }
+      })
+      .catch((err) => alert(err.res?.data?.err || err.message));
   };
+
   return (
     <div id="container">
       <h3>Todo List</h3>
       <form>
         <input
           type="text"
-          value={task}
+          value={task.description}
           placeholder="add an new task"
-          onChange={(e) => setTask(e.target.value)}
+          onChange={(e) =>
+            setTask((prev) => ({ ...prev, description: e.target.value }))
+          }
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
@@ -29,16 +67,7 @@ function App() {
           }}
         />
       </form>
-      <ul>
-        {tasks.map((task, i) => (
-          <li key={i}>
-            {task}
-            <button className="delete-button" onClick={() => deleteTask(task)}>
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+      <TaskList tasks={tasks} deleteTask={deleteTask} />
     </div>
   );
 }
