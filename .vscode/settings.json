@@ -5,9 +5,20 @@
       "server": "localhost",
       "port": 5432,
       "driver": "PostgreSQL",
+      "name": "todoList TEST DB",
+      "database": "test_todo",
+      "username": "postgres",
+      "password": "29739300"
+    },
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
       "name": "todoList DB",
-      "username": "postgre",
-      "database": "todo"
+      "username": "postgres",
+      "database": "todo",
+      "password": "29739300"
     }
   ]
 }

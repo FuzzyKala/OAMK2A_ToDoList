@@ -1,55 +1,23 @@
 import express from "express";
 import cors from "cors";
-import pkg from "pg";
+import todoRouer from "./routers/todoRouter.js";
+import userRouter from "./routers/userRouter.js";
 
-const { Pool } = pkg;
-const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "todo",
-  password: "29739300",
-  port: 5432,
-});
-const port = 3001;
+const port = process.env.SERVER_PORT;
+
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get("/", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM task");
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error("Error executing query", error.stack);
-    return res.status(500).json({ error: error.message });
-  }
-});
+app.use("/", todoRouer);
+app.use("/user", userRouter);
 
-app.post("/create", async (req, res) => {
-  try {
-    const result = await pool.query(
-      "INSERT INTO task (description) values ($1) returning *",
-      [req.body.description]
-    );
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-});
-
-app.delete("/delete/:id", async (req, res) => {
-  const id = parseInt(req.params.id);
-  try {
-    const result = await pool.query("DELETE FROM task WHERE id = $1", [id]);
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: `Task with ID ${id} not found` });
-    }
-    res.status(200).json({ deletedId: id });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
+// Global Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({ error: err.message });
 });
 
 app.listen(port, () => {
