@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
-import "./App.css";
+import "./Home.css";
 import axios from "axios";
-import TaskList from "./components/TaskList";
-import { Task } from "./PropInterface";
+import TaskList from "../components/TaskList";
+import { Task } from "../PropInterface";
+import { useUser } from "../context/useUser";
 
 const url = "http://localhost:3001";
 
-function App() {
+function Home() {
   const [task, setTask] = useState<Task>({
     id: 0,
     description: "",
   });
   const [tasks, setTasks] = useState<Task[]>([]);
-
+  const { user } = useUser();
   useEffect(() => {
     axios
       .get(url)
@@ -21,10 +22,13 @@ function App() {
   }, []);
 
   const addTask = () => {
+    const headers = { headers: { Authorization: user.token } };
+
     if (!task.description.trim()) return;
     axios
       .post(`${url}/create`, {
         description: task.description,
+        headers,
       })
       .then((res) => {
         const newTask = { id: res.data.id, description: task.description };
@@ -35,8 +39,9 @@ function App() {
   };
 
   const deleteTask = (deletedTaskId: number) => {
+    const headers = { headers: { Authorization: user.token } };
     axios
-      .delete(`${url}/delete/${deletedTaskId}`)
+      .delete(`${url}/delete/${deletedTaskId}`, headers)
       .then((res) => {
         if (res.status === 200) {
           const withoutRemoved = tasks.filter(
@@ -72,4 +77,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;
