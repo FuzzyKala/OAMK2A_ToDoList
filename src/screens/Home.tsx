@@ -5,7 +5,7 @@ import TaskList from "../components/TaskList";
 import { Task } from "../PropInterface";
 import { useUser } from "../context/useUser";
 
-const url = "http://localhost:3001";
+const url = process.env.REACT_APP_URL as string;
 
 function Home() {
   const [task, setTask] = useState<Task>({
@@ -22,14 +22,13 @@ function Home() {
   }, []);
 
   const addTask = () => {
-    const headers = { headers: { Authorization: user.token } };
+    const headers = { headers: { Authorization: `Bearer ${user.token}` } };
+    console.log(headers);
 
     if (!task.description.trim()) return;
+
     axios
-      .post(`${url}/create`, {
-        description: task.description,
-        headers,
-      })
+      .post(`${url}/create`, { description: task.description }, headers)
       .then((res) => {
         const newTask = { id: res.data.id, description: task.description };
         setTasks([...tasks, newTask]);
@@ -39,7 +38,7 @@ function Home() {
   };
 
   const deleteTask = (deletedTaskId: number) => {
-    const headers = { headers: { Authorization: user.token } };
+    const headers = { headers: { Authorization: `Bearer ${user.token}` } };
     axios
       .delete(`${url}/delete/${deletedTaskId}`, headers)
       .then((res) => {

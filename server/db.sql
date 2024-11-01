@@ -12,6 +12,5 @@ CREATE TABLE account (
 );
 INSERT into task (description) values ('My test task');
 INSERT into task (description) values ('2nd task');
-INSERT into account (email,password) values ('test@gmail.com','password');
 -- SELECT * FROM task
 -- SELECT * FROM account
