@@ -2,18 +2,19 @@ import jwt from "jsonwebtoken";
 const { verify } = jwt;
 
 const auth = (req, res, next) => {
-  if (!req.headers.authorization) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
     res.statusMessage = "Authorization required";
     res.status(401).json({ message: "Authorization required" });
   } else {
     try {
-      const token = req.headers.authorization;
+      const token = authHeader.split(" ")[1];
       verify(token, process.env.JWT_SECRET);
       next();
     } catch (error) {
+      console.error("Authorization error:", error);
       res.statusMessage = "Invalid credentials";
-      res.status(403).json({ message: "Invalid credentials" });
-      next(error);
+      return res.status(403).json({ message: "Invalid credentials" });
     }
   }
 };

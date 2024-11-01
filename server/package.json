@@ -22,9 +22,11 @@
     "pg": "^8.13.1"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.9",
     "chai": "^5.1.2",
     "cross-env": "^7.0.3",
     "eslint-plugin-chai": "^0.0.1",
-    "mocha": "^10.7.3"
+    "mocha": "^10.7.3",
+    "ts-node": "^10.9.2"
   }
 }

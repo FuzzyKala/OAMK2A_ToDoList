@@ -33,7 +33,9 @@ const insertTestUser = async (email, password) => {
 };
 
 const getToken = (email) => {
-  return sign({ user: email }, process.env.JWT_SECRET);
+  const token = sign({ user: email }, process.env.JWT_SECRET);
+  // console.log("token from functuin:", token);
+  return token;
 };
 
 export { initializeTestDb, insertTestUser, getToken };
