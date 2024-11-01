@@ -23,7 +23,6 @@ function Home() {
 
   const addTask = () => {
     const headers = { headers: { Authorization: `Bearer ${user.token}` } };
-    console.log(headers);
 
     if (!task.description.trim()) return;
 

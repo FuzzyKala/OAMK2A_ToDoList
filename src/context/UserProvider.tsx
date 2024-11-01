@@ -32,7 +32,6 @@ export default function UserProvider({ children }: UserProviderProps) {
     const headers = { headers: { "Content-type": "application/json" } };
     try {
       const res = await axios.post(`${url}/user/login`, json, headers);
-      // const token = res.data.token;
       setUser(res.data);
       sessionStorage.setItem("user", JSON.stringify(res.data));
     } catch (error) {

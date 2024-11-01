@@ -4,6 +4,7 @@ export interface Task {
   id: number;
   description: string;
 }
+
 export interface User {
   email: string;
   password: string;
